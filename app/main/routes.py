@@ -101,35 +101,28 @@ def subscribe():
 @bp.route("/payment")
 @login_required
 def payment():
-    """Payment page with Stripe"""
-    return render_template("payment.html", title="Payment")
-
-
-@bp.route("/create-checkout-session", methods=["POST"])
-@login_required
-def create_checkout_session():
-    """Create Stripe checkout session"""
+    """Create Stripe checkout session and redirect"""
     try:
-        # You'll need to set your Stripe secret key
         stripe.api_key = current_app.config.get('STRIPE_SECRET_KEY')
         
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {'name': 'Trading Analyzer Pro'},
-                    'unit_amount': 999,  # $9.99 in cents
-                },
+                'price': 'price_1SmJowA7mUJ5njOCm9wpRgHs',  # Your price ID
                 'quantity': 1,
             }],
-            mode='payment',
+            mode='subscription',
             success_url=request.host_url + 'payment/success',
             cancel_url=request.host_url + 'pricing',
+            customer_email=current_user.email,
         )
-        return jsonify({'id': checkout_session.id})
+        
+        return render_template('payment.html', 
+                             publishable_key='pk_test_51SmJbTA7mUJ5njOC1Pva0Y8XX5FdZY8h2g0MGfHRSBbYRJzjJxLR3BctSlS6vdnWtJGRODcaEv0DP6n6Nw8UMTBf00GUH3ZobT',
+                             session_id=checkout_session.id)
     except Exception as e:
-        return jsonify(error=str(e)), 403
+        flash(f'Payment error: {str(e)}', 'error')
+        return redirect(url_for('main.pricing'))
 
 
 @bp.route("/payment/success")

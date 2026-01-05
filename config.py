@@ -20,3 +20,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    
+    # Stripe keys
+    STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY') or 'sk_test_51SmJbTA7mUJ5njOCCUxGyyL2IvBkAWhDDPZw332SNn7wOGj1uuks8IWmtTvOQoRQ0sbhIljUJMglAeFTGmO5eLcO00i2qsPmA3'
