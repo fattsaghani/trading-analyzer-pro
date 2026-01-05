@@ -13,6 +13,10 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # Fix for PostgreSQL URL
+    if app.config['SQLALCHEMY_DATABASE_URI'] and app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
+        app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace('postgres://', 'postgresql://', 1)
+
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
@@ -23,8 +27,10 @@ def create_app(config_class=Config):
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
+    # Create database tables
+    with app.app_context():
+        db.create_all()
+
     return app
 
 from app import models
-
-app = create_app()
