@@ -118,7 +118,7 @@ def payment():
         )
         
         return render_template('payment.html', 
-                             publishable_key='pk_test_51SmJbTA7mUJ5njOC1Pva0Y8XX5FdZY8h2g0MGfHRSBbYRJzjJxLR3BctSlS6vdnWtJGRODcaEv0DP6n6Nw8UMTBf00GUH3ZobT',
+                             publishable_key=current_app.config.get('STRIPE_PUBLISHABLE_KEY'),
                              session_id=checkout_session.id)
     except Exception as e:
         flash(f'Payment error: {str(e)}', 'error')
